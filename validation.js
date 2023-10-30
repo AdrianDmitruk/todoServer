@@ -17,11 +17,15 @@ export const registerValidation = [
 ];
 
 export const postCreateValidation = [
-  // body("title", "Введите заголовок статьи").isLength({ min: 3 }).isString(),
-  // body("description", "Введите текст статьи")
-  //   .isLength({
-  //     min: 3,
-  //   })
-  //   .isString(),
+  body("title", "Введите заголовок задачи")
+    .isLength({ min: 3 })
+    .optional()
+    .isString(),
+  body("description", "Введите описание")
+    .optional()
+    .isLength({
+      min: 3,
+    })
+    .isString(),
   body("imageUrl", "Неверная ссылка").optional().isString(),
 ];
