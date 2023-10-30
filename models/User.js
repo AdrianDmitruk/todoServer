@@ -16,6 +16,12 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     avatarUrl: String,
+    tasks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Todo",
+      },
+    ],
   },
   {
     timestamps: true,

@@ -14,7 +14,7 @@ import {
 
 import { handleValidationErrors, checkAuth } from "./utils/index.js";
 
-import { UserController, PostController } from "./controllers/index.js";
+import { UserController, TodoController } from "./controllers/index.js";
 
 mongoose
   .connect(
@@ -74,25 +74,25 @@ app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
   });
 });
 
-app.get("/posts", PostController.getAll);
-app.get("/posts/:id", PostController.getOne);
+app.get("/todo", TodoController.getAll);
+app.get("/todo/:id", TodoController.getOne);
 
-// checkAuth
 app.post(
-  "/posts",
+  "/todo",
   postCreateValidation,
   handleValidationErrors,
-  PostController.create
+  checkAuth,
+  TodoController.create
 );
-// checkAuth
-app.delete("/posts/:id", PostController.remove);
 
-// checkAuth
+app.delete("/todo/:id", checkAuth, TodoController.remove);
+
 app.patch(
-  "/posts/:id",
+  "/todo/:id",
   postCreateValidation,
   handleValidationErrors,
-  PostController.update
+  checkAuth,
+  TodoController.update
 );
 
 app.listen(4444, (err) => {
