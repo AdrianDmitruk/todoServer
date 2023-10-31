@@ -11,7 +11,8 @@ export const register = async (req, res) => {
 
     const doc = new UserModel({
       email: req.body.email,
-      fullName: req.body.fullName,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       avatarUrl: req.body.avatarUrl,
       passwordHash: hash,
     });

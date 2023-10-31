@@ -12,7 +12,8 @@ export const registerValidation = [
   body("password", "Пароль должен быть минимум 5 символов").isLength({
     min: 5,
   }),
-  body("fullName", "Укажите имя").isLength({ min: 3 }),
+  body("firstName", "Укажите имя").isLength({ min: 3 }),
+  body("lastName", "Укажите фамилию").isLength({ min: 3 }),
   body("avatarUrl", "Неверная ссылка").optional().isURL(),
 ];
 
