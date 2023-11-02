@@ -3,7 +3,44 @@ import UserSchema from "../models/User.js";
 
 export const getAll = async (req, res) => {
   try {
-    const tasks = await TodoSchema.find().populate("user");
+    const { day, month, year } = req.query;
+
+    // Проверяем, что все необходимые параметры присутствуют
+    if (!day || !month || !year) {
+      return res.status(400).json({
+        message: "Необходимо указать день, месяц и год",
+      });
+    }
+
+    // Преобразуем параметры в числа
+    const dayNumber = parseInt(day);
+    const monthNumber = parseInt(month);
+    const yearNumber = parseInt(year);
+
+    // Проверяем, что параметры являются корректными числами
+    if (isNaN(dayNumber) || isNaN(monthNumber) || isNaN(yearNumber)) {
+      return res.status(400).json({
+        message: "Некорректные значения для дня, месяца или года",
+      });
+    }
+
+    // Получаем начало и конец указанной даты
+    const startDate = new Date(yearNumber, monthNumber - 1, dayNumber, 0, 0, 0);
+    const endDate = new Date(
+      yearNumber,
+      monthNumber - 1,
+      dayNumber,
+      23,
+      59,
+      59
+    );
+
+    const tasks = await TodoSchema.find({
+      date: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate("user");
 
     res.json(tasks);
   } catch (error) {
@@ -73,7 +110,9 @@ export const create = async (req, res) => {
     const todo = new TodoSchema({
       title: req.body.title,
       description: req.body.description,
-      date: req.body.date,
+      day: req.body.day,
+      month: req.body.month,
+      year: req.body.year,
       user: req.userId,
     });
 
