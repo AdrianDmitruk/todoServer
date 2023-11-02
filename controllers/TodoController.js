@@ -36,10 +36,9 @@ export const getAll = async (req, res) => {
     );
 
     const tasks = await TodoSchema.find({
-      date: {
-        $gte: startDate,
-        $lte: endDate,
-      },
+      day: dayNumber,
+      month: monthNumber,
+      year: yearNumber,
     }).populate("user");
 
     res.json(tasks);
