@@ -101,28 +101,46 @@ export const update = async (req, res) => {
 
     let updatedTodo;
 
-    if (started && started === true) {
-      updatedTodo = await TodoSchema.findByIdAndUpdate(
-        todoId,
-        {
-          started: true,
-          startTime: Date.now(),
-        },
-        { new: true }
-      ).populate("user");
-    } else if (completed && completed === true) {
-      updatedTodo = await TodoSchema.findByIdAndUpdate(
-        todoId,
-        {
-          completed: true,
-        },
-        { new: true }
-      ).populate("user");
+    if (started) {
+      if (started === true) {
+        const todoToUpdate = { started: true };
+        if (req.body.startTime) {
+          todoToUpdate.startTime = req.body.startTime;
+        } else {
+          todoToUpdate.startTime = Date.now();
+        }
 
-      const { startTime } = updatedTodo;
-      const timeTaken = Date.now() - startTime;
+        updatedTodo = await TodoSchema.findByIdAndUpdate(todoId, todoToUpdate, {
+          new: true,
+        }).populate("user");
+      } else {
+        return res.status(400).json({
+          message: "Некорректное значение флага 'started'",
+        });
+      }
+    } else if (completed) {
+      if (completed === true) {
+        updatedTodo = await TodoSchema.findById(todoId).populate("user");
 
-      updatedTodo.timeTaken = timeTaken;
+        if (updatedTodo) {
+          updatedTodo.completed = true;
+          if (!updatedTodo.startTime) {
+            updatedTodo.startTime = Date.now();
+          }
+          const timeTaken = Date.now() - updatedTodo.startTime;
+          updatedTodo.timeTaken = timeTaken;
+
+          await updatedTodo.save();
+        } else {
+          return res.status(404).json({
+            message: "Задача не найдена",
+          });
+        }
+      } else {
+        return res.status(400).json({
+          message: "Некорректное значение флага 'completed'",
+        });
+      }
     } else {
       updatedTodo = await TodoSchema.findByIdAndUpdate(
         todoId,
