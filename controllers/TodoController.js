@@ -5,26 +5,22 @@ export const getAll = async (req, res) => {
   try {
     const { day, month, year } = req.query;
 
-    // Проверяем, что все необходимые параметры присутствуют
     if (!day || !month || !year) {
       return res.status(400).json({
         message: "Необходимо указать день, месяц и год",
       });
     }
 
-    // Преобразуем параметры в числа
     const dayNumber = parseInt(day);
     const monthNumber = parseInt(month);
     const yearNumber = parseInt(year);
 
-    // Проверяем, что параметры являются корректными числами
     if (isNaN(dayNumber) || isNaN(monthNumber) || isNaN(yearNumber)) {
       return res.status(400).json({
         message: "Некорректные значения для дня, месяца или года",
       });
     }
 
-    // Получаем начало и конец указанной даты
     const startDate = new Date(yearNumber, monthNumber - 1, dayNumber, 0, 0, 0);
     const endDate = new Date(
       yearNumber,
@@ -39,7 +35,9 @@ export const getAll = async (req, res) => {
       day: dayNumber,
       month: monthNumber,
       year: yearNumber,
-    }).populate("user");
+    })
+      .sort({ completed: 1, createdAt: -1 })
+      .populate("user");
 
     res.json(tasks);
   } catch (error) {
