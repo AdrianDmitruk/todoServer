@@ -21,6 +21,11 @@ export const getAll = async (req, res) => {
       });
     }
 
+    const currentDate = new Date();
+    const currentDay = currentDate.getDate();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+
     const startDate = new Date(yearNumber, monthNumber - 1, dayNumber, 0, 0, 0);
     const endDate = new Date(
       yearNumber,
@@ -31,13 +36,30 @@ export const getAll = async (req, res) => {
       59
     );
 
-    const tasks = await TodoSchema.find({
+    let tasks = await TodoSchema.find({
       day: dayNumber,
       month: monthNumber,
       year: yearNumber,
     })
       .sort({ completed: 1, createdAt: -1 })
       .populate("user");
+
+    if (
+      currentDay === dayNumber &&
+      currentMonth === monthNumber &&
+      currentYear === yearNumber
+    ) {
+      tasks = tasks.map((task) => {
+        if (!task.completed) {
+          const taskDate = new Date(yearNumber, monthNumber - 1, dayNumber);
+          taskDate.setDate(taskDate.getDate() + 1); // Увеличиваем дату на 1 день
+          task.day = taskDate.getDate();
+          task.month = taskDate.getMonth() + 1;
+          task.year = taskDate.getFullYear();
+        }
+        return task;
+      });
+    }
 
     res.json(tasks);
   } catch (error) {
