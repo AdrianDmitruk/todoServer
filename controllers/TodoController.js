@@ -46,18 +46,18 @@ export const getAll = async (req, res) => {
 
     tasks = tasks.map((task) => {
       if (!task.completed) {
-        const taskDate = new Date(yearNumber, monthNumber - 1, dayNumber);
+        const taskDate = new Date(task.year, task.month - 1, task.day);
         const currentDate = new Date(currentYear, currentMonth - 1, currentDay);
         if (taskDate < currentDate) {
-          taskDate.setDate(taskDate.getDate() + 1); // Увеличиваем дату на 1 день
-          task.day = taskDate.getDate();
-          task.month = taskDate.getMonth() + 1;
-          task.year = taskDate.getFullYear();
+          task.day = currentDay;
+          task.month = currentMonth;
+          task.year = currentYear;
         }
       }
       return task;
     });
 
+    // Фильтруем задачи по дате
     tasks = tasks.filter((task) => {
       const taskDate = new Date(task.year, task.month - 1, task.day, 0, 0, 0);
       return taskDate >= startDate && taskDate <= endDate;
