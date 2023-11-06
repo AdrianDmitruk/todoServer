@@ -161,7 +161,7 @@ export const update = async (req, res) => {
 
     let updatedTodo;
 
-    if (started) {
+    if (started !== undefined) {
       if (started === true) {
         const todoToUpdate = { started: true };
         if (req.body.startTime) {
@@ -178,17 +178,18 @@ export const update = async (req, res) => {
           message: "Некорректное значение флага 'started'",
         });
       }
-    } else if (completed) {
+    } else if (completed !== undefined) {
       if (completed === true) {
         updatedTodo = await TodoSchema.findById(todoId).populate("user");
 
         if (updatedTodo) {
-          updatedTodo.completed = true;
           if (!updatedTodo.startTime) {
             updatedTodo.startTime = Date.now();
           }
           const timeTaken = Date.now() - updatedTodo.startTime;
           updatedTodo.timeTaken = timeTaken;
+
+          updatedTodo.completed = true;
 
           await updatedTodo.save();
         } else {
